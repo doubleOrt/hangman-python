@@ -18,18 +18,22 @@ def startGame():
     numLives = numLetters + 3
     guessResultString = ""
 
-    def displayHiddenWord():
-        print(' '.join(hiddenWord))
+    def displayHiddenWord(userHasWon = False):
+        # just a simple conditional so that we print something a little fancier when the user wins
+        if not userHasWon:
+            print(' '.join(hiddenWord))
+        else:
+            print("~~~ " + (''.join(hiddenWord)).upper() + " ~~~")
 
     def userHasWon():
         print("\n")
         print("You are now a certified genius (though your mom knew all along, trust your mom, live a healthy life)!")
 
-    def displayStatusToConsole():
+    def displayStatusToConsole(userHasWon = False):
         clearConsole()
         print("Number of lives: " + str(numLives))
         print(word)
-        displayHiddenWord()
+        displayHiddenWord(userHasWon)
         print(guessResultString)
 
     correctGuesses = 0
@@ -42,8 +46,13 @@ def startGame():
                 indexOfGuessInWord = letters.index(userGuess)
                 hiddenWord[indexOfGuessInWord] = userGuess
                 correctGuesses += 1
-                del letters[indexOfGuessInWord]
+
+                # without this, already-guessed letters will count as correct guesses; if you delete the element
+                # from letters instead, then it will cause another bug in the game. This is the fix for both.
+                letters[indexOfGuessInWord] = str(random.random())
+
                 if correctGuesses == numLetters:
+                    displayStatusToConsole(True)
                     userHasWon()
                     break
                 guessResultString = "Good!"
